@@ -3,216 +3,401 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>产品587 - 销售漏斗反推看板</title>
+<title>IDL 全链路诊断看板 | 5/25-5/31</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #333; padding: 30px; }
-  .container { max-width: 1000px; margin: 0 auto; }
-  h1 { font-size: 24px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-  .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
-  .card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .card-title { font-size: 16px; font-weight: 600; color: #555; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .stats { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
-  .stat-box { background: #fff; border-radius: 16px; padding: 20px 28px; flex: 1; min-width: 150px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
-  .stat-label { font-size: 13px; color: #888; margin-bottom: 6px; }
-  .stat-value { font-size: 28px; font-weight: 700; color: #1a1a1a; }
-  .stat-value.gold { color: #d4a017; }
-  .stat-unit { font-size: 13px; color: #999; }
-  .funnel { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 20px 0; }
-  .funnel-layer { width: 100%; max-width: 700px; text-align: center; padding: 18px; border-radius: 12px; position: relative; }
-  .funnel-layer .num { font-size: 24px; font-weight: 700; color: #fff; }
-  .funnel-layer .label { font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 2px; }
-  .funnel-layer .rate { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); font-size: 13px; color: #666; }
-  .layer-1 { background: linear-gradient(135deg, #667eea, #764ba2); width: 100%; }
-  .layer-2 { background: linear-gradient(135deg, #f093fb, #f5576c); width: 65%; }
-  .layer-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); width: 40%; }
-  .arrow { color: #ccc; font-size: 18px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th { background: #f8f9fa; padding: 10px 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #eee; }
-  td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', sans-serif; background: #f0f2f5; color: #1a1a2e; padding: 24px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 20px; padding: 28px 32px; margin-bottom: 24px; color: #fff; }
+  .header h1 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .header .meta { display: flex; gap: 20px; margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.65); flex-wrap: wrap; }
+
+  /* Judge bar */
+  .judge-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .judge-card { background: #fff; border-radius: 16px; padding: 18px 24px; flex: 1; min-width: 170px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #4facfe; }
+  .judge-card.danger { border-left-color: #f5576c; }
+  .judge-card.warning { border-left-color: #fbbc04; }
+  .judge-card.good { border-left-color: #34a853; }
+  .judge-card .j-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .judge-card .j-value { font-size: 26px; font-weight: 700; }
+  .judge-card .j-sub { font-size: 12px; color: #999; margin-top: 2px; }
+
+  .section-title { font-size: 16px; font-weight: 600; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .section-title .badge { font-size: 11px; background: #eee; color: #666; padding: 2px 10px; border-radius: 20px; font-weight: 400; }
+  .card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .card-title { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  /* Funnel */
+  .funnel { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 16px 0; }
+  .funnel-layer { width: 100%; max-width: 700px; text-align: center; padding: 16px; border-radius: 10px; position: relative; }
+  .funnel-layer .num { font-size: 22px; font-weight: 700; color: #fff; }
+  .funnel-layer .label { font-size: 12px; color: rgba(255,255,255,0.8); }
+  .funnel-layer .rate { position: absolute; right: -38px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .funnel-layer .rate.red { color: #e74c3c; } .funnel-layer .rate.orange { color: #f39c12; }
+  .arrow { color: #bbb; font-size: 14px; padding: 2px 0; text-align: center; }
+  .l1 { background: linear-gradient(135deg, #667eea, #764ba2); width: 100%; }
+  .l2 { background: linear-gradient(135deg, #f093fb, #f5576c); width: 65%; }
+  .l3 { background: linear-gradient(135deg, #4facfe, #00f2fe); width: 40%; }
+  .l4 { background: linear-gradient(135deg, #43e97b, #38f9d7); width: 22%; }
+
+  .channel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .channel-box { border: 1px solid #eee; border-radius: 12px; padding: 16px; }
+  .channel-box .ch-name { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .channel-box .ch-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; color: #555; }
+  .channel-box .ch-bar { height: 6px; border-radius: 3px; margin: 6px 0; background: #e8e8e8; }
+  .channel-box .ch-bar .fill { height: 100%; border-radius: 3px; }
+
+  .diagnosis { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 12px; padding: 16px; margin: 12px 0; }
+  .diagnosis.red { background: #fff0f0; border-color: #ffccc7; }
+  .diagnosis.green { background: #f6ffed; border-color: #b7eb8f; }
+  .diagnosis .d-item { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 13px; line-height: 1.6; }
+  .d-tag { font-size: 11px; padding: 1px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; margin-right: 4px; }
+  .tag-red { background: #fff1f0; color: #cf1322; } .tag-orange { background: #fff7e6; color: #d46b08; }
+  .tag-green { background: #f6ffed; color: #389e0d; } .tag-blue { background: #e6f7ff; color: #096dd9; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f8f9fa; padding: 8px 10px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #eee; }
+  td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
   tr:hover td { background: #fafafa; }
-  .highlight { background: #fffbe6; font-weight: 600; }
-  .tag { display: inline-block; background: #e8f4fd; color: #1976d2; padding: 2px 10px; border-radius: 20px; font-size: 12px; }
-  .note { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 12px; padding: 16px; margin-top: 20px; font-size: 13px; color: #8c6d00; }
+
+  .controls { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cgroup { display: flex; flex-direction: column; gap: 2px; }
+  .cgroup label { font-size: 11px; color: #888; }
+  .cgroup input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 100px; }
+  .btn { background: #1a1a2e; color: #fff; border: none; border-radius: 8px; padding: 6px 18px; cursor: pointer; font-size: 13px; }
+  .btn:hover { background: #16213e; }
+  .fmt-red { color: #e74c3c; font-weight: 600; }
+  .fmt-green { color: #27ae60; font-weight: 600; }
+  .fmt-orange { color: #f39c12; font-weight: 600; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .price-box { border-radius: 12px; padding: 16px; background: #f6ffed; border: 1px solid #b7eb8f; }
+  .price-box.orange { background: #fff7e6; border-color: #ffd591; }
+  .price-box.blue { background: #e6f7ff; border-color: #91d5ff; }
+  .price-box .big { font-size: 20px; font-weight: 700; }
+  .price-box .sub { font-size: 12px; color: #666; }
+
   @media (max-width: 768px) {
-    .funnel-layer .rate { position: static; margin-top: 4px; display: block; }
+    .funnel-layer .rate { position: static; display: block; margin-top: 2px; }
+    body { padding: 12px; }
+    .grid-2 { grid-template-columns: 1fr; }
   }
-  .controls { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-  .control-group { display: flex; flex-direction: column; gap: 4px; }
-  .control-group label { font-size: 12px; color: #888; }
-  .control-group input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; width: 120px; }
-  .btn { background: #1976d2; color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 14px; }
-  .btn:hover { background: #1565c0; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>
-    <span>📊</span> IDL 产品 · 销售漏斗反推看板
-    <span class="tag">兴趣电商</span>
-  </h1>
-  <div class="subtitle">真实价格带：引流款 139-169元 · 主销款 269元 · 形象款 520元</div>
 
-  <!-- 核心指标 -->
-  <div class="stats">
-    <div class="stat-box">
-      <div class="stat-label">📦 日销目标</div>
-      <div class="stat-value gold">100,000 <span class="stat-unit">元</span></div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">🏷 单价</div>
-      <div class="stat-value">139 <span class="stat-unit">元</span></div>
-    </div>
-    <div class="stat-box" id="stat-qty">
-      <div class="stat-label">🎯 每天需卖</div>
-      <div class="stat-value">719 <span class="stat-unit">件</span></div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">💡 连带率</div>
-      <div class="stat-value">1.0 <span class="stat-unit">件/人</span></div>
+  <!-- HEADER -->
+  <div class="header">
+    <h1>
+      <span>📊</span> IDL 全链路诊断看板
+      <span style="font-size:12px;background:rgba(255,255,255,0.15);padding:2px 12px;border-radius:20px;font-weight:400">5/25 - 5/31 · 抖音电商罗盘</span>
+    </h1>
+    <div class="meta">
+      <span>📦 IDEVERRAY · 兴趣电商 | 真实数据</span>
     </div>
   </div>
 
-  <!-- 漏斗 -->
+  <!-- JUDGE BAR -->
+  <div class="judge-bar" id="judge-bar"></div>
+
+  <!-- 一、漏斗 -->
+  <div class="section-title">🔽 一、流量漏斗 · 反推模型</div>
   <div class="card">
-    <div class="card-title">🔽 销售漏斗</div>
-    <div class="funnel">
-      <div class="funnel-layer layer-1">
-        <div class="num" id="funnel-1">179,856</div>
-        <div class="label">曝光量（看到）</div>
-      </div>
-      <div class="arrow">↓ 曝光→进店 8.0%</div>
-      <div class="funnel-layer layer-2">
-        <div class="num" id="funnel-2">14,388</div>
-        <div class="label">商品卡访问（进店）</div>
-      </div>
-      <div class="arrow">↓ 进店→下单 5.0%</div>
-      <div class="funnel-layer layer-3">
-        <div class="num" id="funnel-3">719</div>
-        <div class="label">成交人数</div>
-      </div>
+    <div class="card-title">🎯 7天聚合 · 曝光→点击→成交</div>
+    <div class="funnel" id="funnel"></div>
+    <div class="diagnosis">
+      <div class="d-item">💡 <b>诊断：</b>曝光→点击率2.82%（偏低，素材吸引力不足）。点击→成交5.59%（尚可，进店后承接还行）。每万次曝光仅16人成交。流量效率有待提升。</div>
     </div>
   </div>
 
-  <!-- 调参卡 -->
+  <!-- 漏斗反推 -->
   <div class="card">
-    <div class="card-title">🎛️ 参数调整</div>
+    <div class="card-title">🎛️ 反推模拟器 <span style="font-size:12px;color:#888;font-weight:400">调整参数看需要多少曝光</span></div>
     <div class="controls">
-      <div class="control-group">
-        <label>曝光→进店率</label>
-        <input type="number" id="rate1" value="8" step="0.5" min="1" max="30">
-        <span style="font-size:11px;color:#999">%</span>
-      </div>
-      <div class="control-group">
-        <label>进店→下单率</label>
-        <input type="number" id="rate2" value="5" step="0.5" min="0.5" max="20">
-        <span style="font-size:11px;color:#999">%</span>
-      </div>
-      <div class="control-group">
-        <label>客单价</label>
-        <input type="number" id="unitPrice" value="269" step="10" min="1">
-        <span style="font-size:11px;color:#999">元</span>
-      </div>
-      <div class="control-group">
-        <label>连带率</label>
-        <input type="number" id="boughtRate" value="1.0" step="0.1" min="0.5" max="10">
-        <span style="font-size:11px;color:#999">件/人</span>
-      </div>
-      <div class="control-group">
-        <label>日销目标</label>
-        <input type="number" id="target" value="100000" step="5000" min="10000">
-        <span style="font-size:11px;color:#999">元</span>
-      </div>
-      <button class="btn" onclick="calc()">重新计算</button>
+      <div class="cgroup"><label>日销目标(元)</label><input type="number" id="t-target" value="100000" step="5000"></div>
+      <div class="cgroup"><label>客单价(元)</label><input type="number" id="t-price" value="127.52" step="5"></div>
+      <div class="cgroup"><label>CTR(%)</label><input type="number" id="t-ctr" value="2.82" step="0.1"></div>
+      <div class="cgroup"><label>CVR(%)</label><input type="number" id="t-cvr" value="5.59" step="0.1"></div>
+      <button class="btn" onclick="recalc()">反推</button>
+    </div>
+    <div style="display:flex;gap:32px;margin-top:16px;flex-wrap:wrap" id="recalc-result"></div>
+  </div>
+
+  <!-- 二、渠道 -->
+  <div class="section-title">📡 二、渠道效能 · 钱从哪来</div>
+  <div class="card">
+    <div class="channel-grid" id="channel-grid"></div>
+    <div class="diagnosis">
+      <div class="d-item">💡 <b>诊断：</b>商品卡是主力（55.9%），客单价¥192，利润核心。短视频曝光量大但CTR仅1.9%（素材点击率差）。直播流量CVR 2.3%（承接差，老问题）。</div>
     </div>
   </div>
 
-  <!-- 灵敏度分析 -->
+  <!-- 三、价格带 -->
+  <div class="section-title">🏷️ 三、货品结构 · 价格带</div>
   <div class="card">
-    <div class="card-title">📈 优化灵敏度分析</div>
-    <p style="font-size:13px;color:#888;margin-bottom:12px">不同转化率组合下所需曝光量（灰色底色 = 当前配置）</p>
+    <div class="grid-2" id="price-grid"></div>
+    <div class="diagnosis" style="margin-top:12px">
+      <div class="d-item">💡 <b>诊断：</b>引流款¥80-120占57%（¥26,737），主销款¥120-200仅19%（¥9,018），形象款¥200+占24%（¥11,299）。<b>客单价¥127 vs 目标¥269，差53%。靠低价冲量，利润薄。</b></div>
+    </div>
+  </div>
+
+  <!-- 四、退款 -->
+  <div class="section-title">🚫 四、退款健康度</div>
+  <div class="card">
     <div style="overflow-x:auto">
-      <table id="sensitivity">
-        <thead>
-          <tr>
-            <th></th>
-            <th>进店→下单 3%</th>
-            <th>进店→下单 5%</th>
-            <th>进店→下单 8%</th>
-            <th>进店→下单 12%</th>
-          </tr>
-        </thead>
-        <tbody id="sensitivity-body"></tbody>
-      </table>
+      <table><thead><tr>
+        <th>日期</th><th>支付金额</th><th>退款金额</th><th>退款率</th><th>发货前退款</th><th>已收货退货</th><th>1小时闪退金额</th><th>1小时订单</th><th>⬆闪退占退款</th>
+      </tr></thead><tbody id="refund-tbody"></tbody></table>
     </div>
-    <div class="note">💡 提示：曝光→进店率每提升2个百分点，或进店→下单率每提升2个百分点，所需曝光量可大幅减少。优化素材质量和商品卡页面是关键。</div>
+    <div class="diagnosis red" style="margin-top:12px">
+      <div class="d-item">🔴 <b>1小时闪退率28.7%</b> — 72单/¥1.5万退款发生在1h内，占全部退款的半壁江山。冲动消费退货问题严重。</div>
+      <div class="d-item">🔴 5/25退款率高达71%（其中35.9%是已收货退货），产品到手与预期不符是核心。</div>
+    </div>
   </div>
 
-  <!-- 日均倒推 -->
+  <!-- 五、用户资产 -->
+  <div class="section-title">👥 五、用户资产 · 复购vs首购</div>
   <div class="card">
-    <div class="card-title">📅 月度目标分解</div>
-    <table>
-      <thead>
-        <tr><th>周期</th><th>日销目标</th><th>日需曝光</th><th>日需进店</th><th>日需成交</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>每日</td><td id="d-target">100,000 元</td><td id="d-exp">179,856</td><td id="d-visit">14,388</td><td id="d-order">719</td></tr>
-        <tr><td>每周 (7天)</td><td id="w-target">700,000 元</td><td id="w-exp">1,258,992</td><td id="w-visit">100,716</td><td id="w-order">5,033</td></tr>
-        <tr><td>每月 (30天)</td><td id="m-target">3,000,000 元</td><td id="m-exp">5,395,680</td><td id="m-visit">431,640</td><td id="m-order">21,570</td></tr>
-      </tbody>
-    </table>
+    <div class="grid-2">
+      <div class="diagnosis" style="background:#f6ffed;border-color:#b7eb8f">
+        <div class="d-item"><b>🔄 复购用户</b></div>
+        <div class="d-item" style="font-size:18px;font-weight:700">106人 | ¥9,497</div>
+        <div class="d-item" style="font-size:13px;color:#555">占支付20.2% · 客单价¥89.59</div>
+      </div>
+      <div class="diagnosis red">
+        <div class="d-item"><b>🆕 首购用户</b></div>
+        <div class="d-item" style="font-size:18px;font-weight:700">263人 | ¥37,557</div>
+        <div class="d-item" style="font-size:13px;color:#555">占支付79.8% · 客单价¥142.80</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;overflow-x:auto">
+      <table><thead><tr><th>日期</th><th>复购人数</th><th>复购金额</th><th>复购率</th><th>首购人数</th><th>首购金额</th></tr></thead><tbody id="repeat-tbody"></tbody></table>
+    </div>
+    <div class="diagnosis" style="margin-top:12px">
+      <div class="d-item">💡 <b>诊断：</b>复购人数占29%但金额仅20%，且复购客单价¥89低于首购¥143。说明老客也在买引流低价款，<b>品牌忠诚消费没有培养起来</b>。原因：产品线价格带断层 + 缺乏会员/私域运营。</div>
+    </div>
   </div>
+
+  <!-- 六、商品 -->
+  <div class="section-title">📋 六、商品表现 · TOP</div>
+  <div class="card">
+    <div style="overflow-x:auto">
+      <table><thead><tr><th>商品</th><th>支付金额</th><th>天数</th><th>备注</th></tr></thead><tbody id="product-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- 七、复盘 -->
+  <div class="section-title">🎯 七、总复盘 · 三件事</div>
+  <div class="card">
+    <div class="diagnosis red">
+      <div class="d-item"><span class="d-tag tag-red">🔴 致命</span> <b>退款率失控 + 客单价太低</b></div>
+      <div class="d-item" style="font-size:13px;color:#555;padding-left:0">7天退款¥22,557（占支付47.9%），1小时闪退占近半。客单价¥127 vs 目标¥269，流量花了但没卖对品。</div>
+    </div>
+    <div class="diagnosis" style="background:#fff7e6;border-color:#ffd591">
+      <div class="d-item"><span class="d-tag tag-orange">🟡 机会</span> <b>商品卡是基本盘，短视频素材是杠杆</b></div>
+      <div class="d-item" style="font-size:13px;color:#555;padding-left:0">商品卡CTR 6.0%稳定货架，持续优化SEO。短视频若能提CTR到4%+，曝光量级完全拉得起来。</div>
+    </div>
+    <div class="diagnosis green">
+      <div class="d-item"><span class="d-tag tag-green">🟢 立即行动</span> <b>降退款 × 拉客单价 × 提素材CTR</b></div>
+      <div class="d-item" style="font-size:13px;color:#555;padding-left:0">
+        ① <b>降退款</b> — 复盘1h闪退商品，优化主图/标题避免误导；加速48h发货履约降发货前退款<br>
+        ② <b>拉客单价</b> — 用主销款¥139-269做主力推广，搭配赠品拉连带率<br>
+        ③ <b>提素材CTR</b> — 从「展示产品」转向「场景种草」，对标行业优质素材
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-function calc() {
-  const unitPrice = parseFloat(document.getElementById('unitPrice').value);
-  const dailyTarget = parseFloat(document.getElementById('target').value);
-  const boughtRate = parseFloat(document.getElementById('boughtRate').value);
-  const rate1 = parseFloat(document.getElementById('rate1').value) / 100;
-  const rate2 = parseFloat(document.getElementById('rate2').value) / 100;
-  const qty = Math.ceil(dailyTarget / unitPrice);
-  const orders = Math.ceil(qty / boughtRate);
-  const visits = Math.ceil(orders / rate2);
-  const exposures = Math.ceil(visits / rate1);
+var DATA = {
+  judge: [
+    {label:'📦 7日支付金额', value:'¥47,054', sub:'日均¥6,722', cls:''},
+    {label:'⚠️ 综合退款率', value:'27.5%', sub:'退¥22,557 / 支付¥47,054', cls:'warning'},
+    {label:'🔴 1小时闪退率', value:'28.7%', sub:'72单占退款49% · 冲动退货', cls:'danger'},
+    {label:'✅ 支付转化率', value:'5.59%', sub:'6,599点击→369成交', cls:'good'},
+    {label:'🔄 复购占比', value:'20.2%', sub:'106人复购 vs 263人首购', cls:''},
+  ],
+  funnel: [
+    {num:'234,112', label:'商品曝光人数', rate:'流失 97.2%', rcls:'red', cls:'l1'},
+    {sep:'↓ CTR 2.82%'},
+    {num:'6,599', label:'商品点击人数', rate:'流失 94.4%', rcls:'red', cls:'l2'},
+    {sep:'↓ CVR 5.59%'},
+    {num:'369', label:'成交人数', rate:'人均¥127', rcls:'orange', cls:'l3'},
+    {sep:'↓ 客单价 ¥127.52'},
+    {num:'¥47,054', label:'7日支付金额', rate:'', rcls:'', cls:'l4'},
+  ],
+  channels: [
+    {name:'📦 商品卡', pct:'55.9%', pay:'¥26,283', people:137, price:191.84, ctr:'6.0%', cvr:'4.8%', barPct:100, barColor:'#1976d2'},
+    {name:'🎬 短视频', pct:'31.4%', pay:'¥14,764', people:129, price:114.45, ctr:'1.9%', cvr:'4.0%', barPct:56, barColor:'#e74c3c'},
+    {name:'🔴 直播', pct:'7.0%', pay:'¥3,282', people:26, price:126.25, ctr:'4.9%', cvr:'2.3%', barPct:12, barColor:'#f39c12'},
+    {name:'📁 其他', pct:'5.8%', pay:'¥2,726', people:347, price:7.86, ctr:'3.8%', cvr:'89%', barPct:10, barColor:'#888'},
+  ],
+  prices: [
+    {name:'引流款 ¥80-120', pct:'56.8%', val:'¥26,737', sub:'7天全勤 · CVR 5.7% 跑量核心', cls:'green'},
+    {name:'主销款 ¥120-200', pct:'19.2%', val:'¥9,018', sub:'7天全勤 · 主力品价格带需拉量', cls:'blue'},
+    {name:'形象款 ¥200+', pct:'24.0%', val:'¥11,299', sub:'7天全勤 · CVR 8.0% 精准高转化', cls:'orange'},
+  ],
+  refund: [
+    {d:'5/25', pay:6320, refund:4494, rate:0.711, preShip:0.307, ret:0.359, h1Amt:1950, h1Ord:8},
+    {d:'5/26', pay:7144, refund:3290, rate:0.461, preShip:0.274, ret:0.167, h1Amt:2229, h1Ord:11},
+    {d:'5/27', pay:9906, refund:4859, rate:0.491, preShip:0.303, ret:0.159, h1Amt:3229, h1Ord:16},
+    {d:'5/28', pay:6640, refund:2899, rate:0.437, preShip:0.261, ret:0.151, h1Amt:1932, h1Ord:10},
+    {d:'5/29', pay:5411, refund:1846, rate:0.341, preShip:0.164, ret:0.177, h1Amt:1072, h1Ord:6},
+    {d:'5/30', pay:7072, refund:2456, rate:0.347, preShip:0.304, ret:0.042, h1Amt:2537, h1Ord:12},
+    {d:'5/31', pay:4561, refund:2713, rate:0.595, preShip:0.533, ret:0.062, h1Amt:2630, h1Ord:12},
+  ],
+  repeat: [
+    {d:'5/25', rp:10, rpay:447, fp:5873, fp2:31},
+    {d:'5/26', rp:14, rpay:1459, fp:5685, fp2:40},
+    {d:'5/27', rp:16, rpay:2594, fp:7311, fp2:55},
+    {d:'5/28', rp:18, rpay:1314, fp:5326, fp2:35},
+    {d:'5/29', rp:12, rpay:1276, fp:4135, fp2:32},
+    {d:'5/30', rp:21, rpay:1464, fp:5608, fp2:44},
+    {d:'5/31', rp:15, rpay:942, fp:3619, fp2:26},
+  ],
+  products: [
+    {n:'Logo胶感印花短T', pay:52268, days:7, note:'🚀 绝对主力'},
+    {n:'夏季纯棉短袖', pay:9956, days:6, note:'副力款'},
+    {n:'陈立农联名卫衣黑', pay:3802, days:5, note:'明星联名'},
+    {n:'港风裂纹字母短T', pay:2800, days:3, note:'上新品'},
+    {n:'秋冬连帽卫衣', pay:2154, days:2, note:'过季品'},
+    {n:'镶钻融合潮流短T', pay:1947, days:5, note:'新款'},
+    {n:'闪光碎钻Logo短T', pay:1547, days:2, note:''},
+    {n:'玫瑰暗纹短T', pay:1522, days:4, note:''},
+  ],
+  totalRefundAmt: 22557,
+  totalPay: 47054,
+};
 
-  document.getElementById('stat-qty').innerHTML = '<div class="stat-label">🎯 每天需卖</div><div class="stat-value">' + qty.toLocaleString() + ' <span class="stat-unit">件</span></div>';
-  document.getElementById('funnel-1').textContent = exposures.toLocaleString();
-  document.getElementById('funnel-2').textContent = visits.toLocaleString();
-  document.getElementById('funnel-3').textContent = orders.toLocaleString();
-
-  document.getElementById('d-target').textContent = dailyTarget.toLocaleString() + ' 元';
-  document.getElementById('d-exp').textContent = exposures.toLocaleString();
-  document.getElementById('d-visit').textContent = visits.toLocaleString();
-  document.getElementById('d-order').textContent = orders.toLocaleString();
-
-  document.getElementById('w-target').textContent = (dailyTarget * 7).toLocaleString() + ' 元';
-  document.getElementById('w-exp').textContent = (exposures * 7).toLocaleString();
-  document.getElementById('w-visit').textContent = (visits * 7).toLocaleString();
-  document.getElementById('w-order').textContent = (orders * 7).toLocaleString();
-
-  document.getElementById('m-target').textContent = (dailyTarget * 30).toLocaleString() + ' 元';
-  document.getElementById('m-exp').textContent = (exposures * 30).toLocaleString();
-  document.getElementById('m-visit').textContent = (visits * 30).toLocaleString();
-  document.getElementById('m-order').textContent = (orders * 30).toLocaleString();
-
-  // 灵敏度表
-  const rates1 = [0.06, 0.08, 0.10, 0.12, 0.15];
-  const rates2 = [0.03, 0.05, 0.08, 0.12];
-  let html = '';
-  for (const r1 of rates1) {
-    let row = '<tr' + (Math.abs(r1 - rate1) < 0.001 ? ' class="highlight"' : '') + '>';
-    row += '<td><strong>曝光→进店 ' + (r1 * 100).toFixed(1) + '%</strong></td>';
-    for (const r2 of rates2) {
-      const e = Math.ceil(Math.ceil(qty / r2) / r1);
-      const isCurrent = Math.abs(r1 - rate1) < 0.001 && Math.abs(r2 - rate2) < 0.001;
-      row += '<td' + (isCurrent ? ' style="background:#d4edda;font-weight:700"' : '') + '>' + e.toLocaleString() + '</td>';
-    }
-    row += '</tr>';
-  }
-  document.getElementById('sensitivity-body').innerHTML = html;
+function fmt(n) {
+  if (typeof n === 'number') return n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return n;
 }
-calc();
+
+function fmt1(n) {
+  return n.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function renderJudge() {
+  var h = '';
+  DATA.judge.forEach(function(j) {
+    h += '<div class="judge-card' + (j.cls ? ' ' + j.cls : '') + '">' +
+      '<div class="j-label">' + j.label + '</div>' +
+      '<div class="j-value">' + j.value + '</div>' +
+      '<div class="j-sub">' + j.sub + '</div></div>';
+  });
+  document.getElementById('judge-bar').innerHTML = h;
+}
+
+function renderFunnel() {
+  var h = '';
+  DATA.funnel.forEach(function(f) {
+    if (f.sep) { h += '<div class="arrow">' + f.sep + '</div>'; return; }
+    h += '<div class="funnel-layer ' + f.cls + '">' +
+      '<div class="num">' + f.num + '</div>' +
+      '<div class="label">' + f.label + '</div>' +
+      (f.rate ? '<div class="rate ' + f.rcls + '">' + f.rate + '</div>' : '') +
+      '</div>';
+  });
+  document.getElementById('funnel').innerHTML = h;
+}
+
+function renderChannels() {
+  var h = '';
+  DATA.channels.forEach(function(c) {
+    h += '<div class="channel-box">' +
+      '<div class="ch-name" style="color:' + c.barColor + '">' + c.name + ' <span style="font-size:12px;color:#888;font-weight:400">| ' + c.pct + '</span></div>' +
+      '<div class="ch-row"><span>支付金额</span><strong>' + c.pay + '</strong></div>' +
+      '<div class="ch-row"><span>成交人数</span><strong>' + c.people + '</strong></div>' +
+      '<div class="ch-row"><span>客单价</span><strong>¥' + c.price + '</strong></div>' +
+      '<div class="ch-bar"><div class="fill" style="width:' + c.barPct + '%;background:' + c.barColor + '"></div></div>' +
+      '<div class="ch-row"><span>CTR</span><strong>' + c.ctr + '</strong><span style="font-size:11px">CVR ' + c.cvr + '</span></div>' +
+      '</div>';
+  });
+  document.getElementById('channel-grid').innerHTML = h;
+}
+
+function renderPrices() {
+  var h = '';
+  DATA.prices.forEach(function(p) {
+    var bg = '#f6ffed', bc = '#b7eb8f';
+    if (p.cls === 'orange') { bg = '#fff7e6'; bc = '#ffd591'; }
+    if (p.cls === 'blue') { bg = '#e6f7ff'; bc = '#91d5ff'; }
+    h += '<div style="background:' + bg + ';border:1px solid ' + bc + ';border-radius:12px;padding:16px">' +
+      '<div style="font-size:13px;font-weight:600">' + p.name + ' <span style="font-size:12px;color:#888;font-weight:400">| ' + p.pct + '</span></div>' +
+      '<div class="big" style="font-size:20px;font-weight:700;margin:4px 0">' + p.val + '</div>' +
+      '<div style="font-size:12px;color:#666">' + p.sub + '</div></div>';
+  });
+  document.getElementById('price-grid').innerHTML = h;
+}
+
+function renderRefund() {
+  var h = '';
+  DATA.refund.forEach(function(r) {
+    var rCls = r.rate > 0.5 ? 'fmt-red' : r.rate > 0.4 ? 'fmt-orange' : '';
+    var h1Pct = (r.h1Amt / r.refund * 100).toFixed(0);
+    h += '<tr><td>' + r.d + '</td>' +
+      '<td>¥' + fmt(r.pay) + '</td>' +
+      '<td class="fmt-red">¥' + fmt(r.refund) + '</td>' +
+      '<td class="' + rCls + '">' + (r.rate * 100).toFixed(1) + '%</td>' +
+      '<td>' + (r.preShip * 100).toFixed(1) + '%</td>' +
+      '<td>' + (r.ret * 100).toFixed(1) + '%</td>' +
+      '<td class="fmt-red">¥' + fmt(r.h1Amt) + '</td>' +
+      '<td>' + r.h1Ord + '单</td>' +
+      '<td><strong>' + h1Pct + '%</strong></td></tr>';
+  });
+  document.getElementById('refund-tbody').innerHTML = h;
+}
+
+function renderRepeat() {
+  var h = '';
+  DATA.repeat.forEach(function(r) {
+    var rPct = (r.rpay / (r.rpay + r.fp) * 100).toFixed(1);
+    h += '<tr><td>' + r.d + '</td>' +
+      '<td>' + r.rp + '</td>' +
+      '<td>¥' + fmt(r.rpay) + '</td>' +
+      '<td>' + rPct + '%</td>' +
+      '<td>' + r.fp2 + '</td><td>¥' + fmt(r.fp) + '</td></tr>';
+  });
+  document.getElementById('repeat-tbody').innerHTML = h;
+}
+
+function renderProducts() {
+  var h = '';
+  DATA.products.forEach(function(p) {
+    h += '<tr><td style="text-align:left;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + p.n + '</td>' +
+      '<td><strong>¥' + fmt(p.pay) + '</strong></td>' +
+      '<td>' + p.days + '天</td>' +
+      '<td style="text-align:left;color:#888;font-size:12px">' + (p.note || '') + '</td></tr>';
+  });
+  document.getElementById('product-tbody').innerHTML = h;
+}
+
+function recalc() {
+  var target = parseFloat(document.getElementById('t-target').value) || 100000;
+  var price = parseFloat(document.getElementById('t-price').value) || 127.52;
+  var ctr = (parseFloat(document.getElementById('t-ctr').value) || 2.82) / 100;
+  var cvr = (parseFloat(document.getElementById('t-cvr').value) || 5.59) / 100;
+  var orders = Math.ceil(target / price);
+  var clicks = Math.ceil(orders / cvr);
+  var exposure = Math.ceil(clicks / ctr);
+  var el = document.getElementById('recalc-result');
+  el.innerHTML = '<div><strong>日需成交人数：</strong>' + fmt(orders) + '</div>' +
+    '<div><strong>日需商品点击：</strong>' + fmt(clicks) + '</div>' +
+    '<div><strong>日需商品曝光：</strong>' + fmt(exposure) + '</div>';
+}
+
+renderJudge();
+renderFunnel();
+renderChannels();
+renderPrices();
+renderRefund();
+renderRepeat();
+renderProducts();
+recalc();
 </script>
 </body>
 </html>
